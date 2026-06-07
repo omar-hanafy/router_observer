@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0-dev.2
+
+- Validate the automated (GitHub Actions + OIDC Trusted Publisher) release
+  pipeline.
+- No functional or API changes since `0.1.0-dev.1`.
+
 ## 0.1.0-dev.1
 
 Initial preview release.
