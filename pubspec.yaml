@@ -1,6 +1,6 @@
 name: router_observer
 description: A pluggable Flutter NavigatorObserver that emits structured navigation telemetry to sinks, with sampling, rate limiting, and PII redaction.
-version: 0.1.0-dev.1
+version: 0.1.0-dev.2
 homepage: https://github.com/omar-hanafy/router_observer
 repository: https://github.com/omar-hanafy/router_observer
 issue_tracker: https://github.com/omar-hanafy/router_observer/issues
