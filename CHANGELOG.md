@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0-dev.1
+## 1.0.0
 
 Complete ground-up rebuild as a full navigation observability toolkit.
 Grounded in the Flutter 3.x `NavigatorObserver` API (all seven callbacks).
@@ -45,6 +45,10 @@ Grounded in the Flutter 3.x `NavigatorObserver` API (all seven callbacks).
 - The `package:logging` dependency is removed; the package now depends only
   on the Flutter SDK. Forward events to any logger with a 3-line
   `NavCallbackListener`.
+
+## 1.0.0-dev.1
+
+- Prerelease of 1.0.0; see the 1.0.0 notes above.
 
 ## 0.1.0-dev.2
 
