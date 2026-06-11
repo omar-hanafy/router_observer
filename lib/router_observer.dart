@@ -1,18 +1,10 @@
-/// Structured navigation telemetry for any Flutter [Navigator].
+/// A complete navigation observability toolkit for Flutter.
 ///
-/// `router_observer` provides [NavTelemetryObserver], a drop-in
-/// [NavigatorObserver] that emits immutable, structured [NavEvent]s to
-/// pluggable [NavEventSink]s. It works with Material/Cupertino apps,
-/// `go_router`, and nested navigators alike.
-///
-/// Features:
-///
-/// - **Structured events** - push/pop/remove/replace/gesture/changeTop, each
-///   carrying route identity, a stack snapshot, and a timestamp.
-/// - **Pluggable sinks** - [PrintSink], [LoggingSink] (`package:logging`),
-///   [CompositeSink], or your own metrics/tracing backend.
-/// - **Production-safe** - severity filtering, sampling, per-minute rate
-///   limiting, and PII redaction via [NavObserverConfig].
+/// Attach a [RouterObserver] to any navigator (`MaterialApp`,
+/// `CupertinoApp`, `go_router`, nested navigators) and receive structured
+/// [NavEvent]s through composable [NavListener]s: console logging,
+/// crash-report breadcrumbs, analytics screen tracking, and an in-app
+/// debug overlay.
 ///
 /// ## Quick start
 ///
@@ -23,7 +15,9 @@
 /// void main() {
 ///   runApp(
 ///     MaterialApp(
-///       navigatorObservers: [NavTelemetryObserver()],
+///       navigatorObservers: [
+///         RouterObserver(listeners: [ConsoleNavLogger()]),
+///       ],
 ///       home: const HomePage(),
 ///     ),
 ///   );
@@ -31,16 +25,14 @@
 /// ```
 library;
 
-export 'src/router_observer.dart'
-    show
-        ArgumentRedactor,
-        CompositeSink,
-        LoggingSink,
-        NavEvent,
-        NavEventSink,
-        NavEventType,
-        NavObserverConfig,
-        NavSeverity,
-        NavTelemetryObserver,
-        PrintSink,
-        defaultRedactor;
+export 'src/events.dart';
+export 'src/listeners/breadcrumbs.dart';
+export 'src/listeners/console_logger.dart';
+export 'src/listeners/listener.dart';
+export 'src/listeners/screen_tracker.dart';
+export 'src/name_resolver.dart';
+export 'src/observer.dart';
+export 'src/overlay/debug_overlay.dart';
+export 'src/redaction.dart';
+export 'src/route_info.dart';
+export 'src/settings.dart';
