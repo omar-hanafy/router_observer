@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0
+## 1.0.0-dev.1
 
 Complete ground-up rebuild as a full navigation observability toolkit.
 Grounded in the Flutter 3.x `NavigatorObserver` API (all seven callbacks).

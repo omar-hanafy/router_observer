@@ -33,7 +33,7 @@ rest to you. `router_observer` turns them into a production-grade pipeline:
 
 ```yaml
 dependencies:
-  router_observer: ^1.0.0
+  router_observer: ^1.0.0-dev.1
 ```
 
 ```dart
