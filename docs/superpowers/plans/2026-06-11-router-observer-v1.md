@@ -19,9 +19,9 @@ Spec: `docs/superpowers/specs/2026-06-11-router-observer-v1-design.md`
 - Modify: `lib/router_observer.dart` (export barrel)
 - Create: empty files per layout in spec "Package layout"
 
-- [ ] Delete old source/test, create directory structure
-- [ ] Update `pubspec.yaml`: version 1.0.0, remove `logging` dep, update description
-- [ ] Commit: `refactor: clear 0.1.0 implementation for v1 rebuild`
+- [x] Delete old source/test, create directory structure
+- [x] Update `pubspec.yaml`: version 1.0.0, remove `logging` dep, update description
+- [x] Commit: `refactor: clear 0.1.0 implementation for v1 rebuild`
 
 ### Task 2: RouteInfo + name resolver + redaction (core value types)
 
@@ -46,9 +46,9 @@ Object? defaultRedactor(...); // case-insensitive contains-mask, recursion caps,
 }
 ```
 
-- [ ] Write tests: resolver order (named, Page.name, Page.key, dialog/sheet/popup/typed fallback); redactor (mask keys case-insensitive, nested maps, iterables capped at 50, truncation, throwing toString -> `<unserializable:...>`); RouteInfo.capture fields + toJson
-- [ ] Run tests, verify fail; implement; verify pass
-- [ ] Commit: `feat: add RouteInfo, name resolution, redaction`
+- [x] Write tests: resolver order (named, Page.name, Page.key, dialog/sheet/popup/typed fallback); redactor (mask keys case-insensitive, nested maps, iterables capped at 50, truncation, throwing toString -> `<unserializable:...>`); RouteInfo.capture fields + toJson
+- [x] Run tests, verify fail; implement; verify pass
+- [x] Commit: `feat: add RouteInfo, name resolution, redaction`
 
 ### Task 3: NavEvent sealed hierarchy
 
@@ -73,8 +73,8 @@ final class NavGestureStart extends NavEvent {}
 final class NavGestureEnd extends NavEvent {}
 ```
 
-- [ ] Tests: toJson shape per subtype, exhaustive switch compiles, toString readable
-- [ ] Implement, pass, commit: `feat: add sealed NavEvent hierarchy`
+- [x] Tests: toJson shape per subtype, exhaustive switch compiles, toString readable
+- [x] Implement, pass, commit: `feat: add sealed NavEvent hierarchy`
 
 ### Task 4: Settings + NavListener contracts
 
@@ -97,8 +97,8 @@ class RecordingNavListener implements NavListener {
 }
 ```
 
-- [ ] Tests: copyWith, callback listener forwards, recording listener filters by type
-- [ ] Implement, pass, commit: `feat: add settings and listener contracts`
+- [x] Tests: copyWith, callback listener forwards, recording listener filters by type
+- [x] Implement, pass, commit: `feat: add settings and listener contracts`
 
 ### Task 5: Stack tracker (internal)
 
@@ -108,8 +108,8 @@ class RecordingNavListener implements NavListener {
 
 Behavior: mirrors Navigator stack by identity; `push(route, previous)` inserts after previous (append fallback), duplicate-safe; `remove(route)`; `replace(old, new)` in place (push fallback); `ensure(route, previous)` self-heal for didChangeTop-first; `routes` snapshot; `find(route)`.
 
-- [ ] Tests: ordered push, insert-above-previous, remove middle (popUntil pattern), replace missing old, duplicate push ignored, self-heal
-- [ ] Implement, pass, commit: `feat: add internal stack tracker`
+- [x] Tests: ordered push, insert-above-previous, remove middle (popUntil pattern), replace missing old, duplicate push ignored, self-heal
+- [x] Implement, pass, commit: `feat: add internal stack tracker`
 
 ### Task 6: RouterObserver
 
@@ -131,8 +131,8 @@ class RouterObserver extends NavigatorObserver {
 ```
 Emission path: update stack -> guards (enabled, popup, gesture, topChange, routeFilter) -> build RouteInfo pair (args redacted if captureArguments) -> build event (sequence++, clock, label, snapshot) -> eventFilter -> try/catch per listener with FlutterError.reportError -> stream.add.
 
-- [ ] Widget tests: push/pop named + anonymous, replace, remove, popUntil, dialog included/excluded via includePopupRoutes, gesture toggles, topChange toggle, routeFilter drops, eventFilter sampling, captureArguments redacts, listener-throw does not break navigation, currentStack/currentRoute accuracy, events stream emits, nested navigators with shared listener get distinct labels, disabled emits nothing
-- [ ] Implement, pass, commit: `feat: add RouterObserver core`
+- [x] Widget tests: push/pop named + anonymous, replace, remove, popUntil, dialog included/excluded via includePopupRoutes, gesture toggles, topChange toggle, routeFilter drops, eventFilter sampling, captureArguments redacts, listener-throw does not break navigation, currentStack/currentRoute accuracy, events stream emits, nested navigators with shared listener get distinct labels, disabled emits nothing
+- [x] Implement, pass, commit: `feat: add RouterObserver core`
 
 ### Task 7: ConsoleNavLogger
 
@@ -142,8 +142,8 @@ Emission path: update stack -> guards (enabled, popup, gesture, topChange, route
 
 Options: `useColors` (default: only when stdout supports; simple bool default false to be debugPrint-safe), `showStack`, `showArguments`, `json`, `printer` (default debugPrint), `formatter` override. One line per event: `[root] -> push  /details (from /home) depth=2`.
 
-- [ ] Tests: line content per event type via captured printer, json mode emits valid JSON, formatter override, colors wrap with ANSI when enabled
-- [ ] Implement, pass, commit: `feat: add ConsoleNavLogger`
+- [x] Tests: line content per event type via captured printer, json mode emits valid JSON, formatter override, colors wrap with ANSI when enabled
+- [x] Implement, pass, commit: `feat: add ConsoleNavLogger`
 
 ### Task 8: NavBreadcrumbs
 
@@ -153,8 +153,8 @@ Options: `useColors` (default: only when stdout supports; simple bool default fa
 
 `NavBreadcrumbs({int capacity = 100, void Function(NavEvent)? onCrumb})`; `entries` (oldest first), `dump()` JSON list, `describe()` multiline, `clear()`.
 
-- [ ] Tests: ring eviction, dump/describe shape, onCrumb forwarding
-- [ ] Implement, pass, commit: `feat: add NavBreadcrumbs`
+- [x] Tests: ring eviction, dump/describe shape, onCrumb forwarding
+- [x] Implement, pass, commit: `feat: add NavBreadcrumbs`
 
 ### Task 9: ScreenTracker
 
@@ -170,8 +170,8 @@ class ScreenTracker implements NavListener {
 ```
 Tracks top non-popup route per navigatorLabel from push/pop/replace/remove/topChange; emits on change with duration since previous view (event timestamps).
 
-- [ ] Tests (fake clock through observer settings + synthetic events): push emits view, pop emits return view with duration, popup ignored by default / counted when enabled, multiple navigators tracked independently
-- [ ] Implement, pass, commit: `feat: add ScreenTracker`
+- [x] Tests (fake clock through observer settings + synthetic events): push emits view, pop emits return view with duration, popup ignored by default / counted when enabled, multiple navigators tracked independently
+- [x] Implement, pass, commit: `feat: add ScreenTracker`
 
 ### Task 10: NavDebugOverlay
 
@@ -181,15 +181,15 @@ Tracks top non-popup route per navigatorLabel from push/pop/replace/remove/topCh
 
 `NavDebugOverlay({required List<RouterObserver> observers, required Widget child, bool? enabled})` - enabled defaults to kDebugMode. Stack(child, draggable bubble); tap opens panel (timeline newest-first + per-observer current stack); close button. Pure Stack composition, Directionality/Material-safe.
 
-- [ ] Widget tests: disabled renders only child; bubble visible when enabled; tap opens panel; events appear in timeline; stack section lists current routes
-- [ ] Implement, pass, commit: `feat: add NavDebugOverlay`
+- [x] Widget tests: disabled renders only child; bubble visible when enabled; tap opens panel; events appear in timeline; stack section lists current routes
+- [x] Implement, pass, commit: `feat: add NavDebugOverlay`
 
 ### Task 11: Barrel exports + analyze + format
 
-- [ ] `lib/router_observer.dart` exports all public APIs (hide internals: stack_tracker)
-- [ ] Run: `dart format .` then full `dart analyze` -> zero issues (package has public_member_api_docs via flutter_lints? ensure strict analysis_options)
-- [ ] `flutter test` full suite green
-- [ ] Commit: `chore: finalize exports, analyze clean`
+- [x] `lib/router_observer.dart` exports all public APIs (hide internals: stack_tracker)
+- [x] Run: `dart format .` then full `dart analyze` -> zero issues (package has public_member_api_docs via flutter_lints? ensure strict analysis_options)
+- [x] `flutter test` full suite green
+- [x] Commit: `chore: finalize exports, analyze clean`
 
 ### Task 12: Example app
 
@@ -198,18 +198,18 @@ Tracks top non-popup route per navigatorLabel from push/pop/replace/remove/topCh
 
 Demo: named routes (home/details/settings), anonymous route, dialog, bottom sheet, nested tab navigators with labeled observers + shared listeners, ScreenTracker printout, NavDebugOverlay via builder, breadcrumb dump button.
 
-- [ ] Implement; `dart analyze example` clean
-- [ ] Commit: `docs: rebuild example app for v1`
+- [x] Implement; `dart analyze example` clean
+- [x] Commit: `docs: rebuild example app for v1`
 
 ### Task 13: README, CHANGELOG, pubspec polish
 
-- [ ] README per spec "Docs and release" (recipes: Firebase, Sentry, go_router, nested navigators, sampling/rate-limit via eventFilter, release stripping, testing)
-- [ ] CHANGELOG 1.0.0 with migration notes from 0.1.0-dev.2
-- [ ] `flutter pub publish --dry-run` passes
-- [ ] Commit: `docs: v1.0.0 README and CHANGELOG`
+- [x] README per spec "Docs and release" (recipes: Firebase, Sentry, go_router, nested navigators, sampling/rate-limit via eventFilter, release stripping, testing)
+- [x] CHANGELOG 1.0.0 with migration notes from 0.1.0-dev.2
+- [x] `flutter pub publish --dry-run` passes
+- [x] Commit: `docs: v1.0.0 README and CHANGELOG`
 
 ### Task 14: Final verification
 
-- [ ] `dart format --set-exit-if-changed .` clean, `dart analyze` clean, `flutter test` green, dry-run publish OK
-- [ ] Review diff vs spec for coverage gaps
-- [ ] Commit any fixes
+- [x] `dart format --set-exit-if-changed .` clean, `dart analyze` clean, `flutter test` green, dry-run publish OK
+- [x] Review diff vs spec for coverage gaps
+- [x] Commit any fixes
