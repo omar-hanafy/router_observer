@@ -199,9 +199,8 @@ class RouterObserver extends NavigatorObserver {
   NavEvent _build(_EventKind kind, RouteInfo route, RouteInfo? previousRoute) {
     final DateTime timestamp = settings.clock?.call() ?? DateTime.now();
     final int sequence = ++_sequence;
-    final List<String> snapshot = _tracker.routes
-        .map(settings.nameResolver)
-        .toList(growable: false);
+    final List<String> snapshot =
+        _tracker.routes.map(settings.nameResolver).toList(growable: false);
 
     return switch (kind) {
       _EventKind.push => NavPush(

@@ -49,8 +49,7 @@ class ScreenView {
       };
 
   @override
-  String toString() =>
-      'ScreenView($name on $navigatorLabel'
+  String toString() => 'ScreenView($name on $navigatorLabel'
       '${previousName != null ? ', from $previousName' : ''})';
 }
 
@@ -74,7 +73,8 @@ class ScreenView {
 /// navigator independently by label.
 class ScreenTracker implements NavListener {
   /// Creates a screen tracker delivering views to [onScreenView].
-  ScreenTracker({required this.onScreenView, this.treatPopupsAsScreens = false});
+  ScreenTracker(
+      {required this.onScreenView, this.treatPopupsAsScreens = false});
 
   /// Invoked whenever the visible screen of a navigator changes.
   final void Function(ScreenView view) onScreenView;

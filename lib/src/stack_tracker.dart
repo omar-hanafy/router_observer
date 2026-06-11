@@ -18,8 +18,7 @@ class StackTracker {
   Route<dynamic>? get top => _stack.isEmpty ? null : _stack.last;
 
   /// Whether [route] is currently tracked.
-  bool contains(Route<dynamic> route) =>
-      _stack.any((r) => identical(r, route));
+  bool contains(Route<dynamic> route) => _stack.any((r) => identical(r, route));
 
   /// Records a push of [route] above [previous].
   ///

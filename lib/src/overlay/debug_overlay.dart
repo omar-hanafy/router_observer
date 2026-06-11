@@ -127,7 +127,8 @@ class _NavDebugOverlayState extends State<NavDebugOverlay> {
 
   Widget _buildBubble(BuildContext context) {
     final Size size = MediaQuery.maybeOf(context)?.size ?? const Size(400, 800);
-    final Offset offset = _bubbleOffset ?? Offset(size.width - 72, size.height - 160);
+    final Offset offset =
+        _bubbleOffset ?? Offset(size.width - 72, size.height - 160);
 
     return Positioned(
       left: offset.dx,
@@ -201,14 +202,14 @@ class _NavDebugOverlayState extends State<NavDebugOverlay> {
               ),
             ),
           ),
+          // No tooltips here: the overlay lives above the Navigator, where
+          // no Overlay widget exists to host them.
           IconButton(
-            tooltip: 'Clear timeline',
             icon: const Icon(Icons.delete_outline, color: Colors.white70),
             onPressed: () => setState(_events.clear),
           ),
           IconButton(
             key: const ValueKey<String>('nav_debug_overlay_close'),
-            tooltip: 'Close',
             icon: const Icon(Icons.close, color: Colors.white70),
             onPressed: () => setState(() => _open = false),
           ),
@@ -253,8 +254,7 @@ class _NavDebugOverlayState extends State<NavDebugOverlay> {
       itemBuilder: (BuildContext context, int index) {
         final NavEvent event = _events[index];
         final DateTime t = event.timestamp;
-        final String time =
-            '${t.hour.toString().padLeft(2, '0')}:'
+        final String time = '${t.hour.toString().padLeft(2, '0')}:'
             '${t.minute.toString().padLeft(2, '0')}:'
             '${t.second.toString().padLeft(2, '0')}';
         return Padding(
