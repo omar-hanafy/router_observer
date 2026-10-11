@@ -41,7 +41,7 @@ return `null` when that state is unknown.
 
 ```yaml
 dependencies:
-  router_observer: ^2.0.0-dev.1
+  router_observer: ^2.0.0
 ```
 
 ```dart
