@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:router_observer/src/stack_tracker.dart';
 
 MaterialPageRoute<void> _route(String name) => MaterialPageRoute<void>(
-      builder: (_) => const SizedBox(),
-      settings: RouteSettings(name: name),
-    );
+  builder: (_) => const SizedBox(),
+  settings: RouteSettings(name: name),
+);
 
 void main() {
   group('StackTracker', () {
@@ -88,6 +88,17 @@ void main() {
       tracker.push(a);
       tracker.push(b, previous: _route('ghost'));
       expect(tracker.routes, [a, b]);
+    });
+
+    test('top changes move an existing page without duplicating it', () {
+      final tracker = StackTracker();
+      final a = _route('a');
+      final b = _route('b');
+      tracker.push(a);
+      tracker.push(b, previous: a);
+      tracker.ensure(a, previous: b);
+      expect(tracker.routes, [b, a]);
+      expect(tracker.top, same(a));
     });
   });
 }

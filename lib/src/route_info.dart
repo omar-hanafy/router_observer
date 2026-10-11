@@ -14,6 +14,7 @@ class RouteInfo {
     required this.id,
     this.arguments,
     this.isFirst = false,
+    this.isCurrent,
     this.isPopup = false,
     this.isModal = false,
     this.pageKey,
@@ -43,6 +44,7 @@ class RouteInfo {
       id: identityHashCode(route),
       arguments: arguments,
       isFirst: route.isFirst,
+      isCurrent: route.navigator == null ? null : route.isCurrent,
       isPopup: route is PopupRoute,
       isModal: route is ModalRoute,
       pageKey: pageKey,
@@ -65,6 +67,13 @@ class RouteInfo {
   /// Whether this route was the first route in its navigator.
   final bool isFirst;
 
+  /// Whether this route is currently top-most in its attached navigator.
+  ///
+  /// Null for unattached routes or manually constructed snapshots that omit it.
+  /// This can be false for routes awaiting a later removal callback in the
+  /// same navigation update, even if they are still in the tracked stack.
+  final bool? isCurrent;
+
   /// Whether this route is a [PopupRoute] (dialog, menu, bottom sheet).
   final bool isPopup;
 
@@ -76,14 +85,15 @@ class RouteInfo {
 
   /// Serializes this snapshot into a JSON-encodable map.
   Map<String, Object?> toJson() => <String, Object?>{
-        'name': name,
-        'type': type,
-        'id': id,
-        if (arguments != null) 'arguments': arguments,
-        'isFirst': isFirst,
-        'isPopup': isPopup,
-        if (pageKey != null) 'pageKey': pageKey,
-      };
+    'name': name,
+    'type': type,
+    'id': id,
+    if (arguments != null) 'arguments': arguments,
+    'isFirst': isFirst,
+    if (isCurrent != null) 'isCurrent': isCurrent,
+    'isPopup': isPopup,
+    if (pageKey != null) 'pageKey': pageKey,
+  };
 
   @override
   String toString() => 'RouteInfo($name, type: $type)';

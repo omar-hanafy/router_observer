@@ -29,11 +29,19 @@ rest to you. `router_observer` turns them into a production-grade pipeline:
 | **Crash-proof** | Listener exceptions are reported via `FlutterError.reportError` and never break navigation |
 | **Zero dependencies** | Only the Flutter SDK |
 
+## Requirements
+
+Flutter **3.47.7 or newer** and Dart **3.13.5 or newer** (below Dart 4).
+Version 2 raises the minimum SDKs; upgrade Flutter before updating the package.
+Existing observer and listener setup remains supported.
+Classes implementing `RouteInfo` directly must provide `bool? isCurrent`;
+return `null` when that state is unknown.
+
 ## Quick start
 
 ```yaml
 dependencies:
-  router_observer: ^1.0.0
+  router_observer: ^2.0.0
 ```
 
 ```dart
@@ -144,7 +152,14 @@ RouterObserver(listeners: [
 ```
 
 `ScreenTracker` collapses noisy raw events (pushes, top changes, popup
-traffic) into clean "the visible screen changed" callbacks.
+traffic) into clean "the visible screen changed" callbacks. Removing or replacing
+hidden routes does not create screen views. Views are deduplicated by screen
+name. Keep `includeTopChanges` enabled to observe reordering of existing pages;
+Flutter does not send push/pop callbacks for that operation.
+
+Stack inspection mirrors the observer callbacks. The top follows page reorders,
+but relative reordering of pages below an unchanged top is not reported by Flutter
+and cannot be reconstructed from those callbacks.
 
 ### go_router
 
@@ -238,7 +253,8 @@ Argument capture is off by default. When enabled, values pass through the
 configured `Redactor` first. `defaultRedactor` masks any map key containing
 `token`, `password`, `secret`, `email`, `authorization`, `apikey`, or
 `api_key` (case-insensitive), recurses through nested maps/lists with caps,
-truncates long strings, and never throws.
+truncates long strings, and never throws. Maps and lists at the depth limit become
+`<max-depth>` without stringifying their potentially sensitive contents.
 
 ## Testing your navigation
 
@@ -262,6 +278,28 @@ testWidgets('opens details', (tester) async {
   expect(recorder.pushes.last.route.name, '/details');
 });
 ```
+
+## Package verification
+
+Run these commands from a clone of this repository:
+
+```sh
+flutter pub get
+dart format --output=none --set-exit-if-changed .
+flutter analyze
+flutter test
+# On macOS, build and run the native navigation integration tests:
+./tool/run_integration_test.sh
+dart pub publish --dry-run
+dart pub global activate pana 0.23.14
+pana --exit-code-threshold 0 .
+```
+
+The integration runner creates a temporary macOS host for the example and package.
+It requires Xcode, Flutter with macOS support, and Python 3. Set `FLUTTER_BIN` to
+select a Flutter executable or `KEEP_INTEGRATION_HARNESS=1` to retain the host for
+debugging.
+CI checks both the minimum Flutter version and the latest stable channel.
 
 ## License
 

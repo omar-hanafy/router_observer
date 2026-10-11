@@ -19,10 +19,7 @@ void main() {
     recorder = RecordingNavListener();
   });
 
-  Widget app(
-    RouterObserver observer, {
-    Map<String, WidgetBuilder>? routes,
-  }) {
+  Widget app(RouterObserver observer, {Map<String, WidgetBuilder>? routes}) {
     return MaterialApp(
       navigatorKey: navigatorKey,
       navigatorObservers: [observer],
@@ -107,10 +104,11 @@ void main() {
       navigatorKey.currentState!.pushNamed('/settings');
       await tester.pumpAndSettle();
 
-      expect(
-        observer.currentStack.map((r) => r.name),
-        ['/', '/details', '/settings'],
-      );
+      expect(observer.currentStack.map((r) => r.name), [
+        '/',
+        '/details',
+        '/settings',
+      ]);
       expect(observer.currentRoute!.name, '/settings');
       expect(observer.stackDepth, 3);
 
@@ -236,8 +234,9 @@ void main() {
       expect(recorder.events, isEmpty);
     });
 
-    testWidgets('a throwing listener does not break navigation or others',
-        (tester) async {
+    testWidgets('a throwing listener does not break navigation or others', (
+      tester,
+    ) async {
       final errors = <FlutterErrorDetails>[];
       final oldHandler = FlutterError.onError;
       FlutterError.onError = errors.add;
@@ -280,8 +279,9 @@ void main() {
       }
     });
 
-    testWidgets('injectable clock stamps events deterministically',
-        (tester) async {
+    testWidgets('injectable clock stamps events deterministically', (
+      tester,
+    ) async {
       final fixed = DateTime.utc(2026, 6, 11, 10);
       await pumpApp(
         tester,
@@ -292,8 +292,7 @@ void main() {
       expect(recorder.pushes.single.timestamp, fixed);
     });
 
-    testWidgets(
-        'shared listeners receive labeled events from nested '
+    testWidgets('shared listeners receive labeled events from nested '
         'navigators', (tester) async {
       final rootObserver = RouterObserver(listeners: [recorder]);
       final nestedObserver = RouterObserver(
@@ -319,8 +318,9 @@ void main() {
 
       final labels = recorder.pushes.map((e) => e.navigatorLabel).toSet();
       expect(labels, containsAll(<String>{'root', 'nested'}));
-      final nestedPush =
-          recorder.pushes.firstWhere((e) => e.navigatorLabel == 'nested');
+      final nestedPush = recorder.pushes.firstWhere(
+        (e) => e.navigatorLabel == 'nested',
+      );
       expect(nestedPush.route.name, 'nested-root');
     });
 
@@ -349,6 +349,80 @@ void main() {
       chatty.didStopUserGesture();
       expect(recorder.events.whereType<NavGestureStart>(), hasLength(1));
       expect(recorder.events.whereType<NavGestureEnd>(), hasLength(1));
+    });
+
+    test('empty-stack gesture completion respects every event filter', () {
+      final configurations = [
+        const RouterObserverSettings(
+          enabled: false,
+          includeGestureEvents: true,
+        ),
+        RouterObserverSettings(
+          includeGestureEvents: true,
+          routeFilter: (_) => false,
+        ),
+        RouterObserverSettings(
+          includeGestureEvents: true,
+          eventFilter: (_) => false,
+        ),
+      ];
+      for (final settings in configurations) {
+        final observer = RouterObserver(
+          settings: settings,
+          listeners: [recorder],
+        );
+        observer.didStopUserGesture();
+        expect(recorder.events, isEmpty);
+      }
+      final observer = RouterObserver(
+        settings: const RouterObserverSettings(includeGestureEvents: true),
+        listeners: [recorder],
+      );
+      observer.didStopUserGesture();
+      expect(recorder.events.single, isA<NavGestureEnd>());
+    });
+
+    testWidgets(
+      'listeners cannot mutate snapshots delivered to other listeners',
+      (tester) async {
+        await pumpApp(
+          tester,
+          listeners: [
+            NavCallbackListener(
+              onEvent: (event) {
+                expect(
+                  () => event.stackSnapshot[0] = 'corrupted',
+                  throwsUnsupportedError,
+                );
+              },
+            ),
+            recorder,
+          ],
+        );
+        navigatorKey.currentState!.pushNamed('/details');
+        await tester.pumpAndSettle();
+        expect(recorder.pushes.single.stackSnapshot, ['/', '/details']);
+        expect(recorder.pushes.single.toJson()['stack'], ['/', '/details']);
+      },
+    );
+
+    testWidgets('a reused observer clears a detached navigator stack', (
+      tester,
+    ) async {
+      final observer = await pumpApp(tester);
+      navigatorKey.currentState!.pushNamed('/details');
+      await tester.pumpAndSettle();
+      expect(observer.stackDepth, 2);
+      await tester.pumpWidget(const SizedBox());
+      // Deliberately do not read the observer while it is detached.
+      navigatorKey = GlobalKey<NavigatorState>();
+      await tester.pumpWidget(app(observer));
+      expect(observer.currentStack.map((route) => route.name), ['/']);
+      expect(observer.stackDepth, 1);
+      expect(observer.currentRoute!.name, '/');
+      await tester.pumpWidget(const SizedBox());
+      expect(observer.stackDepth, 0);
+      expect(observer.currentRoute, isNull);
     });
 
     testWidgets('dispose closes listeners and the stream', (tester) async {
