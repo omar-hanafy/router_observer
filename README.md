@@ -34,6 +34,8 @@ rest to you. `router_observer` turns them into a production-grade pipeline:
 Flutter **3.47.7 or newer** and Dart **3.13.5 or newer** (below Dart 4).
 Version 2 raises the minimum SDKs; upgrade Flutter before updating the package.
 Existing observer and listener setup remains supported.
+Classes implementing `RouteInfo` directly must provide `bool? isCurrent`;
+return `null` when that state is unknown.
 
 ## Quick start
 

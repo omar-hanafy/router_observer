@@ -6,6 +6,8 @@
 
 - Require Flutter 3.47.7 and Dart 3.13.5 or newer. Upgrade Flutter before
   updating this package.
+- Classes implementing `RouteInfo` must provide the new `bool? isCurrent`
+  getter; return `null` when the current-route state is unknown.
 
 ### New
 
