@@ -27,6 +27,7 @@ sealed class NavEvent {
     required this.navigatorLabel,
     required this.stackSnapshot,
     this.previousRoute,
+    this.currentRoute,
   });
 
   /// The route this event is primarily about.
@@ -37,6 +38,14 @@ sealed class NavEvent {
   /// For [NavPush] this is the route below the pushed route; for [NavPop]
   /// the newly revealed route; for [NavReplace] the replaced route.
   final RouteInfo? previousRoute;
+
+  /// The tracked top-most route after this callback, with redacted arguments
+  /// when argument capture is enabled.
+  ///
+  /// Unlike [route] or [previousRoute], this identifies the top even when a
+  /// hidden route is removed or replaced. Null when the tracked stack is empty
+  /// or when an event was constructed without this optional snapshot.
+  final RouteInfo? currentRoute;
 
   /// Wall-clock time the event was emitted (from the configured clock).
   final DateTime timestamp;
@@ -63,15 +72,16 @@ sealed class NavEvent {
   /// Serializes this event into a JSON-encodable map.
   @mustCallSuper
   Map<String, Object?> toJson() => <String, Object?>{
-        'type': typeName,
-        'timestamp': timestamp.toIso8601String(),
-        'sequence': sequence,
-        'navigator': navigatorLabel,
-        'route': route.toJson(),
-        if (previousRoute != null) 'previousRoute': previousRoute!.toJson(),
-        'stack': stackSnapshot,
-        'stackDepth': stackDepth,
-      };
+    'type': typeName,
+    'timestamp': timestamp.toIso8601String(),
+    'sequence': sequence,
+    'navigator': navigatorLabel,
+    'route': route.toJson(),
+    if (previousRoute != null) 'previousRoute': previousRoute!.toJson(),
+    if (currentRoute != null) 'currentRoute': currentRoute!.toJson(),
+    'stack': stackSnapshot,
+    'stackDepth': stackDepth,
+  };
 
   @override
   String toString() =>
@@ -89,6 +99,7 @@ final class NavPush extends NavEvent {
     required super.navigatorLabel,
     required super.stackSnapshot,
     super.previousRoute,
+    super.currentRoute,
   });
 
   @override
@@ -105,6 +116,7 @@ final class NavPop extends NavEvent {
     required super.navigatorLabel,
     required super.stackSnapshot,
     super.previousRoute,
+    super.currentRoute,
   });
 
   @override
@@ -122,6 +134,7 @@ final class NavRemove extends NavEvent {
     required super.navigatorLabel,
     required super.stackSnapshot,
     super.previousRoute,
+    super.currentRoute,
   });
 
   @override
@@ -138,6 +151,7 @@ final class NavReplace extends NavEvent {
     required super.navigatorLabel,
     required super.stackSnapshot,
     super.previousRoute,
+    super.currentRoute,
   });
 
   /// The route that took the old route's place. Alias of [route].
@@ -160,6 +174,7 @@ final class NavTopChange extends NavEvent {
     required super.navigatorLabel,
     required super.stackSnapshot,
     super.previousRoute,
+    super.currentRoute,
   });
 
   @override
@@ -176,6 +191,7 @@ final class NavGestureStart extends NavEvent {
     required super.navigatorLabel,
     required super.stackSnapshot,
     super.previousRoute,
+    super.currentRoute,
   });
 
   @override
@@ -192,6 +208,7 @@ final class NavGestureEnd extends NavEvent {
     required super.navigatorLabel,
     required super.stackSnapshot,
     super.previousRoute,
+    super.currentRoute,
   });
 
   @override

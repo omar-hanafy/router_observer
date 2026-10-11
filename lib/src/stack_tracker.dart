@@ -63,12 +63,15 @@ class StackTracker {
     }
   }
 
-  /// Ensures [route] is tracked, inserting it above [previous] when missing.
+  /// Ensures [route] is tracked at the top of the stack.
   ///
   /// Used to self-heal when the first callback received for a route is
-  /// `didChangeTop`.
+  /// `didChangeTop`, or when an existing page is moved to the top. Observer
+  /// callbacks do not describe reordering among routes below the top.
   void ensure(Route<dynamic> route, {Route<dynamic>? previous}) {
-    if (!contains(route)) push(route, previous: previous);
+    if (identical(top, route)) return;
+    remove(route);
+    _stack.add(route);
   }
 
   /// Clears all tracked routes.

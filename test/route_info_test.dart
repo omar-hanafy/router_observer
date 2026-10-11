@@ -17,6 +17,7 @@ void main() {
       expect(info.isPopup, isFalse);
       expect(info.isModal, isTrue);
       expect(info.pageKey, isNull);
+      expect(info.isCurrent, isNull);
     });
 
     test('capture extracts page keys', () {
@@ -35,6 +36,7 @@ void main() {
       final json = info.toJson();
       expect(json.containsKey('arguments'), isFalse);
       expect(json.containsKey('pageKey'), isFalse);
+      expect(json.containsKey('isCurrent'), isFalse);
       expect(json['name'], '/x');
       expect(json['isFirst'], isFalse);
       expect(json['isPopup'], isFalse);

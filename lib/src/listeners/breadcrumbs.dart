@@ -18,7 +18,7 @@ import 'package:router_observer/src/listeners/listener.dart';
 class NavBreadcrumbs implements NavListener {
   /// Creates a breadcrumb buffer holding at most [capacity] events.
   NavBreadcrumbs({this.capacity = 100, this.onCrumb})
-      : assert(capacity > 0, 'capacity must be positive');
+    : assert(capacity > 0, 'capacity must be positive');
 
   /// Maximum number of events retained; older events are evicted first.
   final int capacity;
@@ -42,7 +42,8 @@ class NavBreadcrumbs implements NavListener {
     final StringBuffer buffer = StringBuffer();
     for (final NavEvent event in _buffer) {
       final DateTime t = event.timestamp;
-      final String time = '${_pad(t.hour)}:${_pad(t.minute)}:${_pad(t.second)}'
+      final String time =
+          '${_pad(t.hour)}:${_pad(t.minute)}:${_pad(t.second)}'
           '.${t.millisecond.toString().padLeft(3, '0')}';
       buffer.writeln(
         '$time [${event.navigatorLabel}] ${event.typeName} '

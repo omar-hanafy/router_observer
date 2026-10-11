@@ -2,12 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:router_observer/router_observer.dart';
 
 NavEvent _event(int sequence) => NavPush(
-      route: const RouteInfo(name: '/x', type: 'Route', id: 1),
-      timestamp: DateTime.utc(2026),
-      sequence: sequence,
-      navigatorLabel: 'root',
-      stackSnapshot: const ['/x'],
-    );
+  route: const RouteInfo(name: '/x', type: 'Route', id: 1),
+  timestamp: DateTime.utc(2026),
+  sequence: sequence,
+  navigatorLabel: 'root',
+  stackSnapshot: const ['/x'],
+);
 
 void main() {
   group('NavCallbackListener', () {

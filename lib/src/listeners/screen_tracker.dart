@@ -39,17 +39,18 @@ class ScreenView {
 
   /// Serializes this view into a JSON-encodable map.
   Map<String, Object?> toJson() => <String, Object?>{
-        'name': name,
-        if (previousName != null) 'previousName': previousName,
-        'navigator': navigatorLabel,
-        'timestamp': timestamp.toIso8601String(),
-        if (timeOnPreviousScreen != null)
-          'timeOnPreviousScreenMs': timeOnPreviousScreen!.inMilliseconds,
-        if (arguments != null) 'arguments': arguments,
-      };
+    'name': name,
+    if (previousName != null) 'previousName': previousName,
+    'navigator': navigatorLabel,
+    'timestamp': timestamp.toIso8601String(),
+    if (timeOnPreviousScreen != null)
+      'timeOnPreviousScreenMs': timeOnPreviousScreen!.inMilliseconds,
+    if (arguments != null) 'arguments': arguments,
+  };
 
   @override
-  String toString() => 'ScreenView($name on $navigatorLabel'
+  String toString() =>
+      'ScreenView($name on $navigatorLabel'
       '${previousName != null ? ', from $previousName' : ''})';
 }
 
@@ -73,8 +74,10 @@ class ScreenView {
 /// navigator independently by label.
 class ScreenTracker implements NavListener {
   /// Creates a screen tracker delivering views to [onScreenView].
-  ScreenTracker(
-      {required this.onScreenView, this.treatPopupsAsScreens = false});
+  ScreenTracker({
+    required this.onScreenView,
+    this.treatPopupsAsScreens = false,
+  });
 
   /// Invoked whenever the visible screen of a navigator changes.
   final void Function(ScreenView view) onScreenView;
@@ -86,12 +89,32 @@ class ScreenTracker implements NavListener {
 
   @override
   void onNavEvent(NavEvent event) {
-    final RouteInfo? candidate = switch (event) {
-      NavPush() || NavReplace() || NavTopChange() => event.route,
-      NavPop() || NavRemove() => event.previousRoute,
-      NavGestureStart() || NavGestureEnd() => null,
-    };
-    if (candidate == null) return;
+    if (event is NavGestureStart || event is NavGestureEnd) return;
+    if (event.stackSnapshot.isEmpty &&
+        (event is NavPop || event is NavRemove)) {
+      _current.remove(event.navigatorLabel);
+      return;
+    }
+    // A newly attached navigator starts a fresh screen session, even when
+    // its initial route has the same name as the previous navigator's root.
+    if (event is NavPush &&
+        event.previousRoute == null &&
+        event.stackDepth == 1 &&
+        !event.route.isPopup) {
+      _current.remove(event.navigatorLabel);
+    }
+    // The observer records the visible top independently of the mutated
+    // route. Replacing or removing a route below it is not a screen change.
+    // Fall back to callback semantics for events constructed by callers.
+    final RouteInfo? candidate = event is NavTopChange
+        ? event.route
+        : event.currentRoute ??
+              switch (event) {
+                NavPush() || NavReplace() || NavTopChange() => event.route,
+                NavPop() || NavRemove() => event.previousRoute,
+                NavGestureStart() || NavGestureEnd() => null,
+              };
+    if (candidate == null || candidate.isCurrent == false) return;
     if (candidate.isPopup && !treatPopupsAsScreens) return;
 
     final _CurrentScreen? previous = _current[event.navigatorLabel];
@@ -102,12 +125,15 @@ class ScreenTracker implements NavListener {
       previousName: previous?.name,
       navigatorLabel: event.navigatorLabel,
       timestamp: event.timestamp,
-      timeOnPreviousScreen:
-          previous == null ? null : event.timestamp.difference(previous.since),
+      timeOnPreviousScreen: previous == null
+          ? null
+          : event.timestamp.difference(previous.since),
       arguments: candidate.arguments,
     );
-    _current[event.navigatorLabel] =
-        _CurrentScreen(candidate.name, event.timestamp);
+    _current[event.navigatorLabel] = _CurrentScreen(
+      candidate.name,
+      event.timestamp,
+    );
     onScreenView(view);
   }
 

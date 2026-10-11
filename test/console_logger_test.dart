@@ -4,26 +4,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:router_observer/router_observer.dart';
 
 const _home = RouteInfo(name: '/home', type: 'Route', id: 1);
-const _details =
-    RouteInfo(name: '/details', type: 'Route', id: 2, arguments: '{id: 42}');
+const _details = RouteInfo(
+  name: '/details',
+  type: 'Route',
+  id: 2,
+  arguments: '{id: 42}',
+);
 
 NavEvent _push() => NavPush(
-      route: _details,
-      previousRoute: _home,
-      timestamp: DateTime.utc(2026),
-      sequence: 1,
-      navigatorLabel: 'root',
-      stackSnapshot: const ['/home', '/details'],
-    );
+  route: _details,
+  previousRoute: _home,
+  timestamp: DateTime.utc(2026),
+  sequence: 1,
+  navigatorLabel: 'root',
+  stackSnapshot: const ['/home', '/details'],
+);
 
 NavEvent _pop() => NavPop(
-      route: _details,
-      previousRoute: _home,
-      timestamp: DateTime.utc(2026),
-      sequence: 2,
-      navigatorLabel: 'root',
-      stackSnapshot: const ['/home'],
-    );
+  route: _details,
+  previousRoute: _home,
+  timestamp: DateTime.utc(2026),
+  sequence: 2,
+  navigatorLabel: 'root',
+  stackSnapshot: const ['/home'],
+);
 
 void main() {
   group('ConsoleNavLogger', () {

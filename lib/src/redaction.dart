@@ -36,7 +36,8 @@ const int _maxDepth = 6;
 /// - Map values whose key contains any entry of [maskKeys]
 ///   (case-insensitive) are replaced with [maskedValue].
 /// - Maps and iterables are converted recursively, capped at
-///   50 items per iterable and 6 levels of nesting.
+///   50 items per iterable and 6 levels of nesting. Containers at the depth
+///   limit are replaced with an opaque marker without exposing their contents.
 /// - Strings, numbers, and booleans are kept; strings longer than
 ///   [maxChars] are truncated with a `...(n more)` suffix.
 /// - Any other object is stringified and truncated.
@@ -46,8 +47,7 @@ Object? defaultRedactor(
   Object? value, {
   required Set<String> maskKeys,
   required int maxChars,
-}) =>
-    _redact(value, maskKeys: maskKeys, maxChars: maxChars, depth: 0);
+}) => _redact(value, maskKeys: maskKeys, maxChars: maxChars, depth: 0);
 
 Object? _redact(
   Object? value, {
@@ -57,7 +57,9 @@ Object? _redact(
 }) {
   try {
     if (value == null) return null;
-    if (depth >= _maxDepth) return _truncate(value, maxChars);
+    if (depth >= _maxDepth && (value is Map || value is Iterable)) {
+      return '<max-depth>';
+    }
 
     if (value is Map) {
       final Map<String, Object?> out = <String, Object?>{};
