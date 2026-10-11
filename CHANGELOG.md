@@ -1,5 +1,32 @@
 # Changelog
 
+## 2.0.0
+
+### Breaking changes
+
+- Require Flutter 3.47.7 and Dart 3.13.5 or newer. Upgrade Flutter before
+  updating this package.
+- Classes implementing `RouteInfo` must provide the new `bool? isCurrent`
+  getter; return `null` when the current-route state is unknown.
+
+### New
+
+- Add `NavEvent.currentRoute` and `RouteInfo.isCurrent` snapshots to distinguish
+  the current screen from a route changed elsewhere in the stack.
+
+### Fixes
+
+- Keep screen analytics on the visible route when hidden routes are removed or
+  replaced, multiple pages are removed together, or existing pages are reordered.
+  Preserve redacted arguments when returning to a previous screen.
+- Stop deeply nested and cyclic argument containers from exposing sensitive
+  values when the redaction depth limit is reached.
+- Clear stale stacks when an observer is reused with a new navigator, and track
+  an existing page moved to the top.
+- Apply configured filters to gesture-end events even with an empty stack, and
+  prevent listeners from modifying emitted stack snapshots.
+- Keep the debug overlay bubble inside its layout after dragging or resizing.
+
 ## 2.0.0-dev.1
 
 ### Breaking changes
