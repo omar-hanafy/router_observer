@@ -187,9 +187,8 @@ class TabRootPage extends StatelessWidget {
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute<void>(
             settings: const RouteSettings(name: 'tab-detail'),
-            builder: (_) => const Scaffold(
-              body: Center(child: Text('Tab detail')),
-            ),
+            builder: (_) =>
+                const Scaffold(body: Center(child: Text('Tab detail'))),
           ),
         ),
         child: const Text('Push inside nested navigator'),

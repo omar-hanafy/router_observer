@@ -115,20 +115,42 @@ class _NavDebugOverlayState extends State<NavDebugOverlay> {
 
     return Directionality(
       textDirection: direction,
-      child: Stack(
-        children: <Widget>[
-          widget.child,
-          if (_open) _buildPanel(context),
-          _buildBubble(context),
-        ],
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final Size fallback =
+              MediaQuery.maybeOf(context)?.size ?? const Size(400, 800);
+          final Size size = Size(
+            constraints.hasBoundedWidth ? constraints.maxWidth : fallback.width,
+            constraints.hasBoundedHeight
+                ? constraints.maxHeight
+                : fallback.height,
+          );
+          return Stack(
+            children: <Widget>[
+              widget.child,
+              if (_open) _buildPanel(context),
+              _buildBubble(size),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildBubble(BuildContext context) {
-    final Size size = MediaQuery.maybeOf(context)?.size ?? const Size(400, 800);
-    final Offset offset =
-        _bubbleOffset ?? Offset(size.width - 72, size.height - 160);
+  Offset _clampBubbleOffset(Offset offset, Size size) {
+    final double maxX = size.width > 48 ? size.width - 48 : 0;
+    final double maxY = size.height > 48 ? size.height - 48 : 0;
+    return Offset(
+      offset.dx.clamp(0, maxX).toDouble(),
+      offset.dy.clamp(0, maxY).toDouble(),
+    );
+  }
+
+  Widget _buildBubble(Size size) {
+    final Offset offset = _clampBubbleOffset(
+      _bubbleOffset ?? Offset(size.width - 72, size.height - 160),
+      size,
+    );
 
     return Positioned(
       left: offset.dx,
@@ -136,7 +158,13 @@ class _NavDebugOverlayState extends State<NavDebugOverlay> {
       child: GestureDetector(
         key: const ValueKey<String>('nav_debug_overlay_bubble'),
         onPanUpdate: (DragUpdateDetails details) {
-          setState(() => _bubbleOffset = offset + details.delta);
+          setState(() {
+            final Offset current = _clampBubbleOffset(
+              _bubbleOffset ?? offset,
+              size,
+            );
+            _bubbleOffset = _clampBubbleOffset(current + details.delta, size);
+          });
         },
         onTap: () => setState(() => _open = !_open),
         child: Material(
@@ -254,7 +282,8 @@ class _NavDebugOverlayState extends State<NavDebugOverlay> {
       itemBuilder: (BuildContext context, int index) {
         final NavEvent event = _events[index];
         final DateTime t = event.timestamp;
-        final String time = '${t.hour.toString().padLeft(2, '0')}:'
+        final String time =
+            '${t.hour.toString().padLeft(2, '0')}:'
             '${t.minute.toString().padLeft(2, '0')}:'
             '${t.second.toString().padLeft(2, '0')}';
         return Padding(
@@ -293,11 +322,11 @@ class _NavDebugOverlayState extends State<NavDebugOverlay> {
   }
 
   Color _typeColor(NavEvent event) => switch (event) {
-        NavPush() => Colors.greenAccent,
-        NavPop() => Colors.cyanAccent,
-        NavRemove() => Colors.redAccent,
-        NavReplace() => Colors.amberAccent,
-        NavTopChange() => Colors.purpleAccent,
-        NavGestureStart() || NavGestureEnd() => Colors.white54,
-      };
+    NavPush() => Colors.greenAccent,
+    NavPop() => Colors.cyanAccent,
+    NavRemove() => Colors.redAccent,
+    NavReplace() => Colors.amberAccent,
+    NavTopChange() => Colors.purpleAccent,
+    NavGestureStart() || NavGestureEnd() => Colors.white54,
+  };
 }

@@ -2,12 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:router_observer/router_observer.dart';
 
 NavEvent _event(int sequence, {String name = '/x'}) => NavPush(
-      route: RouteInfo(name: name, type: 'Route', id: sequence),
-      timestamp: DateTime.utc(2026, 6, 11, 12, 1, 33, 456),
-      sequence: sequence,
-      navigatorLabel: 'root',
-      stackSnapshot: [name],
-    );
+  route: RouteInfo(name: name, type: 'Route', id: sequence),
+  timestamp: DateTime.utc(2026, 6, 11, 12, 1, 33, 456),
+  sequence: sequence,
+  navigatorLabel: 'root',
+  stackSnapshot: [name],
+);
 
 void main() {
   group('NavBreadcrumbs', () {
@@ -36,10 +36,7 @@ void main() {
 
     test('describe renders a readable trail', () {
       final crumbs = NavBreadcrumbs()..onNavEvent(_event(1, name: '/home'));
-      expect(
-        crumbs.describe(),
-        '12:01:33.456 [root] push /home (depth 1)\n',
-      );
+      expect(crumbs.describe(), '12:01:33.456 [root] push /home (depth 1)\n');
     });
 
     test('forwards each event to onCrumb before buffering', () {

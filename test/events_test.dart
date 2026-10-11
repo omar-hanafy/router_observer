@@ -5,13 +5,14 @@ const _route = RouteInfo(name: '/details', type: 'MaterialPageRoute', id: 1);
 const _previous = RouteInfo(name: '/home', type: 'MaterialPageRoute', id: 2);
 
 NavPush _push() => NavPush(
-      route: _route,
-      previousRoute: _previous,
-      timestamp: DateTime.utc(2026, 6, 11, 12),
-      sequence: 7,
-      navigatorLabel: 'root',
-      stackSnapshot: const ['/home', '/details'],
-    );
+  route: _route,
+  previousRoute: _previous,
+  currentRoute: _route,
+  timestamp: DateTime.utc(2026, 6, 11, 12),
+  sequence: 7,
+  navigatorLabel: 'root',
+  stackSnapshot: const ['/home', '/details'],
+);
 
 void main() {
   group('NavEvent', () {
@@ -25,6 +26,7 @@ void main() {
       expect(json['stackDepth'], 2);
       expect((json['route']! as Map)['name'], '/details');
       expect((json['previousRoute']! as Map)['name'], '/home');
+      expect((json['currentRoute']! as Map)['name'], '/details');
     });
 
     test('stackDepth derives from snapshot', () {
@@ -39,15 +41,15 @@ void main() {
           required int sequence,
           required String navigatorLabel,
           required List<String> stackSnapshot,
-        }) ctor,
-      ) =>
-          ctor(
-            route: _route,
-            timestamp: DateTime.utc(2026),
-            sequence: 1,
-            navigatorLabel: 'root',
-            stackSnapshot: const [],
-          );
+        })
+        ctor,
+      ) => ctor(
+        route: _route,
+        timestamp: DateTime.utc(2026),
+        sequence: 1,
+        navigatorLabel: 'root',
+        stackSnapshot: const [],
+      );
 
       expect(build(NavPush.new).typeName, 'push');
       expect(build(NavPop.new).typeName, 'pop');
@@ -86,10 +88,7 @@ void main() {
     });
 
     test('toString is informative', () {
-      expect(
-        _push().toString(),
-        'NavEvent.push(#7 [root] /details <- /home)',
-      );
+      expect(_push().toString(), 'NavEvent.push(#7 [root] /details <- /home)');
     });
   });
 }
